@@ -4,7 +4,7 @@ import { omit } from 'lodash'
 
 import { signJwt } from '../../utils/jwt.utils'
 import logger from '../../utils/logger'
-import { createUser, validatePassword, createUserSession } from './user.service'
+import { createUser, validatePassword, createUserSession, findUserSession, updateSession } from './user.service'
 import { CreateUserInput } from './schema/user.schema'
 
 export async function createUserHandler(req: Request<{}, {}, CreateUserInput['body']>, res: Response) {
@@ -54,5 +54,31 @@ export async function createUserSessionHandler(req: Request, res: Response) {
   return res.send({
     accessToken,
     refreshToken
+  })
+}
+
+export async function getUserSessionsHandler(req: Request, res: Response) {
+  const userId = res.locals.user._id
+
+  const sessions = await findUserSession({
+    user: userId,
+    valid: true
+  })
+
+  return res.send(sessions)
+}
+
+export async function deleteUserSessionHandler(req: Request, res: Response) {
+  const sessionId = res.locals.user.session
+
+  await updateSession({
+    _id: sessionId,
+  }, {
+    valid: false
+  })
+
+  return res.send({
+    accessToken: null,
+    refreshToken: null
   })
 }
