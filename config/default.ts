@@ -1,5 +1,13 @@
+import dotenv from 'dotenv'
+
+dotenv.config()
+
 export default {
   port: 8080,
-  dbUri: "mongodb://mongo-db/ChatApp",
-  dbUi2: "mongodb//localhost:27017/ChatApp"
+  dbUri: process.env.DB_URI,
+  saltWorkFactor: 10,
+  accessTokenTimeToLive: '15m',
+  refreshTokenTimeToLive: '1y',
+  privateKey: process.env.PRIVATE_KEY,
+  publicKey: process.env.PUBLIC_KEY
 }
