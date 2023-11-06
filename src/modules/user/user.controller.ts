@@ -22,7 +22,9 @@ export async function createUserSessionHandler(req: Request, res: Response) {
   const user = await validatePassword(req.body)
 
   if(!user) {
-    return res.sendStatus(401).send("Invalid Email or Password")
+    return res.status(401).send({
+      message: "Invalid Email or Password"
+    })
   }
 
   //create a session
