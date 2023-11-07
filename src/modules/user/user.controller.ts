@@ -12,7 +12,7 @@ export async function createUserHandler(req: Request<{}, {}, CreateUserInput['bo
     const user = await createUser(req.body)
     return res.send(omit(user.toJSON(), "password"))
   } catch (e: any) {
-    logger.error(e,)
+    logger.error(e)
     return res.status(409).send(e.message)
   }
 }
