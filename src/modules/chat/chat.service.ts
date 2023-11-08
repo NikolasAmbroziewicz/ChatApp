@@ -18,6 +18,10 @@ export async function findChat(
   return ChatModel.findOne(query, {}, options)
 }
 
+export async function findChats() {
+  return ChatModel.find().limit(10).lean()
+}
+
 export async function findAndUpdateChat(
   query: FilterQuery<ChatDocument>,
   update: UpdateQuery<ChatDocument>,

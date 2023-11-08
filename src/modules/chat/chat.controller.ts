@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import mongoose from 'mongoose'
 
-import { createChat, findAndUpdateChat, findChat } from './chat.service'
+import { createChat, findAndUpdateChat, findChat, findChats } from './chat.service'
 
 import { CreateChatInput, UpdateChatInput } from './chat.schema'
 
@@ -50,4 +50,12 @@ export async function updateChatController(
   const updateProduct = await findAndUpdateChat({ _id: chatId }, update, { new: true});
 
   return res.send(updateProduct)
-} 
+}
+
+export async function getChatController(
+  req: Request,
+  res: Response
+) {
+  const chats = await findChats()
+  return res.send(chats)
+}
