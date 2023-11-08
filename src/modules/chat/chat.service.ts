@@ -1,7 +1,8 @@
 import ChatModel from './chat.model'
-import { CreateChatInput } from './chat.schema'
 
-export async function createChat(input: CreateChatInput['body']) {
+import { ChatInput } from './chat.model';
+
+export async function createChat(input: ChatInput) {
   try {
     return await ChatModel.create(input)
   } catch (e: any) {

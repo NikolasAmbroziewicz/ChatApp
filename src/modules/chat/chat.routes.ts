@@ -4,10 +4,10 @@ import validateResource from '../../middleware/validateResource'
 
 import requireUser from '../../middleware/requireUser'
 
-import { createChatSchema } from './chat.schema'
+import { createChatSchema, updateChatSchema } from './chat.schema'
 
 import { 
-  createChatController,
+  createChatController
 } from './chat.controller'
 
 export function routes(app: Express) {
