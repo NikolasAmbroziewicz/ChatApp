@@ -1,11 +1,22 @@
-import { Request, Response } from 'express'
+import { Request, Response, query } from 'express'
 import mongoose from 'mongoose'
 
-import { createChat, findAndUpdateChat, findChat, findChats } from './chat.service'
+import { 
+  createChat, 
+  findAndUpdateChat, 
+  findChat, 
+  findChats,
+  deleteChat
+} from './chat.service'
 
-import { CreateChatInput, UpdateChatInput } from './chat.schema'
+import { 
+  CreateChatInput, 
+  UpdateChatInput, 
+  DeleteChatInput 
+} from './chat.schema'
 
 import logger from '../../utils/logger'
+import ChatModel from './chat.model'
 
 export async function createChatController(req: Request<{}, {}, CreateChatInput['body']>, res: Response) {
   try {
@@ -29,7 +40,7 @@ export async function updateChatController(
 
   if(!mongoose.Types.ObjectId.isValid(chatId)) {
     return res.status(403).send({
-      message: 'Invalid Id'
+      message: 'Invalid Chat Id'
     })
   }
 
@@ -58,4 +69,28 @@ export async function getChatController(
 ) {
   const chats = await findChats()
   return res.send(chats)
+}
+
+export async function deleteChatController(
+  req: Request<DeleteChatInput['params']>,
+  res: Response
+) {
+  const userId = res.locals.user._id;
+  const chatId = req.params.chatId
+
+  if (!mongoose.Types.ObjectId.isValid(chatId)) {
+    return res.status(403).send({
+      message: 'Invalid Chat Id'
+    })
+  }
+
+  const product = await findChat({ _id: chatId });
+
+  if (String(product?.user) !== userId) {
+    return res.sendStatus(403);
+  }
+
+  await deleteChat({ _id: chatId })
+
+  return res.sendStatus(200);
 }

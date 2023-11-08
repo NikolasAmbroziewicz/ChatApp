@@ -29,3 +29,7 @@ export async function findAndUpdateChat(
 ) {
   return ChatModel.findOneAndUpdate(query, update, options)
 }
+
+export async function deleteChat(query: FilterQuery<ChatDocument>,) {
+  return ChatModel.deleteOne(query);
+}

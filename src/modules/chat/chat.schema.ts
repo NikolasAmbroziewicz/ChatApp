@@ -25,5 +25,10 @@ export const updateChatSchema = object({
   ...params
 })
 
+export const deleteChatSchema = object({
+  ...params
+})
+
 export type CreateChatInput = TypeOf<typeof createChatSchema>
 export type UpdateChatInput = TypeOf<typeof updateChatSchema>
+export type DeleteChatInput = TypeOf<typeof deleteChatSchema>
