@@ -7,7 +7,11 @@ async function connect () {
   try {
     const dbUri =  config.get<string>('dbUri')
     await mongoose.connect(dbUri)
-    logger.info("Database has been connected")
+    
+    logger.info("MonogDB has been connected")
+
+    logger.info('Redis exist')
+
   } catch(e) {
     logger.error('Could not connect to DB')
     process.exit(1)

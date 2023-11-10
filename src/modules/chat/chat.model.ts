@@ -4,7 +4,6 @@ import { UserDocument } from "../user/models/user.model";
 export interface ChatInput {
   name: string,
   user: UserDocument['_id']
-
 }
 
 export interface ChatDocument extends ChatInput {

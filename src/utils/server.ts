@@ -1,8 +1,10 @@
-import express from 'express'
+import express from 'express';
 
-import deserializeUser from '../middleware/deserializeUser'
+import config from 'config';
+import cors from 'cors';
+import deserializeUser from '../middleware/deserializeUser';
 
-import routes from "../routes"
+import routes from "../routes";
 
 function createServer() {
   const app = express()
@@ -10,6 +12,14 @@ function createServer() {
   app.use(express.json())
   app.use(deserializeUser)
 
+  app.use(
+    cors({
+      origin: config.get("origin"),
+      credentials: true,
+      exposedHeaders: 'x-access-token'
+    })
+  )
+  
   routes(app);
 
   return app
