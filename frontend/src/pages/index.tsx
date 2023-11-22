@@ -1,10 +1,13 @@
-import { Button } from '@mantine/core';
+import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
   return (
-    <>
-    Home
-    <Button variant="filled">Button</Button>
-    </>
+    <div>
+      <span className='bg-red-100'>
+        Home Page
+      </span>
+    </div>
   )
 }

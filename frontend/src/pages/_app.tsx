@@ -1,17 +1,13 @@
-import "@mantine/core/styles.css";
-
+import '@/styles/globals.css'
+import '@mantine/core/styles.css'
 import type { AppProps } from 'next/app'
 
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
-import AuthProvider from "@/features/Auth/Providers/AuthProvider";
+import { MantineProvider } from "@mantine/core";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <AuthProvider>
-      <MantineProvider defaultColorScheme="light">
-        <Component {...pageProps} />
-      </MantineProvider>
-    </AuthProvider>
-  
+    <MantineProvider defaultColorScheme='light'>
+      <Component {...pageProps} />
+    </MantineProvider>
   )
 }
