@@ -9,15 +9,17 @@ const SignUpPage = () => {
   const {
     handleSubmit,
     handleFormSubmit,
-    register
+    register,
+    errors
   } = useSignUp()
+
   return (
     <div className='flex flex-col w-full h-screen justify-center items-center'>
       <form 
         onSubmit={handleSubmit(handleFormSubmit)}
         className='min-w-[320px]'
       >
-        <Title align="center" size="h1" mb={12}>Sign In</Title>
+        <Title className="text-center" size="h1" mb={12}>Sign In</Title>
         <TextInput
           label="Email"
           placeholder="Email"
@@ -25,24 +27,28 @@ const SignUpPage = () => {
           leftSection={<MdAlternateEmail size={16} />}
           {...register('email')}
         />
+        {errors.email?.message && <p className="text-red-500 text-xs italic mb-[12px]">{errors.email.message}</p>}
         <TextInput
           label="Name"
           placeholder="name"
           mb={12}
           {...register('name')}
         />
+        {errors.name?.message && <p className="text-red-500 text-xs italic mb-[12px]">{errors.name?.message}</p>}
         <PasswordInput 
           label="Password"
           placeholder="Password"
           mb={12}
           {...register('password')}
         />
+        {errors.password?.message && <p className="text-red-500 text-xs italic mb-[12px]">{errors.password?.message}</p>}
         <PasswordInput 
           label="Password"
           placeholder="Password"
           mb={12}
           {...register('passwordConfirmation')}
         />
+        {errors.passwordConfirmation?.message && <p className="text-red-500 text-xs italic mb-[12px]">{errors.passwordConfirmation?.message}</p>}
         <Button
           type='submit'
           fullWidth
