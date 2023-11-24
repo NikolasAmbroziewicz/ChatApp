@@ -25,7 +25,7 @@ export async function createUserSession(userId: string, userAgent: string) {
 }
 
 export async function findUserSession(query: FilterQuery<SessionDocument>) {
-  return SessionModel.find(query).lean()
+  return SessionModel.find(query).populate({ path: 'user'}).lean()
 }
 
 export async function updateSession(

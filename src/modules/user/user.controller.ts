@@ -54,8 +54,13 @@ export async function createUserSessionHandler(req: Request, res: Response) {
 
   //return access & refresh token
   return res.send({
-    accessToken,
-    refreshToken
+    tokens: {
+      accessToken,
+      refreshToken
+    },
+    user: {
+      ...user
+    }
   })
 }
 
@@ -67,7 +72,14 @@ export async function getUserSessionsHandler(req: Request, res: Response) {
     valid: true
   })
 
-  return res.send(sessions)
+  return res.send(sessions.map((session) => ({
+    ...session,
+    user: {
+      id: session.user._id,
+      name: session.user.name,
+      email: session.user.email,
+    }
+  })))
 }
 
 export async function deleteUserSessionHandler(req: Request, res: Response) {
