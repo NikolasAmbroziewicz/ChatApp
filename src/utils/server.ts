@@ -16,7 +16,7 @@ function createServer() {
     cors({
       origin: config.get("origin"),
       credentials: true,
-      exposedHeaders: 'x-access-token'
+      exposedHeaders: ['x-access-token', 'x-access-time-token']
     })
   )
   

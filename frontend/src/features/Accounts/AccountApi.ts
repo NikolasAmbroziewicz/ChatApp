@@ -25,7 +25,7 @@ export const useAccountApi = () => {
       .get('/v1/api/sessions', {
         headers: {
           Authorization: `Bearer ${tokens.accessToken}`,
-          'x-refresh-token': tokens.refreshToken
+          'x-refresh': tokens.refreshToken
         }
       }).then((res) => res)
   }

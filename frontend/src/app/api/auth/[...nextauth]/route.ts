@@ -4,28 +4,31 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 import { useAccountApi } from "@/features/Accounts/AccountApi";
 
-async function refreshToken(old_tokens: JWT) {
+async function refreshToken(session: JWT) {
   const { getSession } = useAccountApi()
-
-  console.log('refreshToken')
-
+  
   const res = await getSession({
-    accessToken: old_tokens.tokens.accessToken,
-    refreshToken: old_tokens.tokens.refreshToken
+    accessToken: session.tokens.accessToken,
+    refreshToken: session.tokens.refreshToken
   })
-
-  if(res.headers['x-access-token']) {
-    return {
-      ...old_tokens,
-      tokens: {
-        ...old_tokens.tokens,
-        accessToken: res.headers['x-access-token']
+  
+  if (res.status === 200) {
+    if (res.headers['x-access-token']) {
+      return {
+        ...session,
+        tokens: {
+          refreshToken: session.tokens.refreshToken,
+          accessToken: res.headers['x-access-token'],
+          expiresIn: Number(res.headers['x-access-time-token'])
+        }
+      }
+    } else {
+      return {
+        ...session
       }
     }
   } else {
-    return {
-      ...old_tokens
-    }
+    return null
   }
 }
 
@@ -66,7 +69,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) return {...token, ...user};
-
+      
       if (new Date().getTime() < token.tokens.expiresIn) return token
 
       return await refreshToken(token) as JWT
