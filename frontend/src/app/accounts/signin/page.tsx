@@ -3,16 +3,17 @@ import Link from "next/link";
 import { Button, Title, TextInput, PasswordInput } from '@mantine/core';
 import { MdAlternateEmail } from "react-icons/md";
 
-import { useSignUp } from "@/features/Accounts/hooks/useSignUp";
+import { useSignIn } from "@/features/Accounts/hooks/useSignIn";
 
-const SignUpPage = () => {
+const SignInPage = () => {
   const {
     handleSubmit,
     handleFormSubmit,
+    errors,
     register,
-    errors
-  } = useSignUp()
-
+    loginError
+  } = useSignIn()
+  
   return (
     <div className='flex flex-col w-full h-screen justify-center items-center'>
       <form 
@@ -28,39 +29,26 @@ const SignUpPage = () => {
           {...register('email')}
         />
         {errors.email?.message && <p className="text-red-500 text-xs italic mb-[12px]">{errors.email.message}</p>}
-        <TextInput
-          label="Name"
-          placeholder="name"
-          mb={12}
-          {...register('name')}
-        />
-        {errors.name?.message && <p className="text-red-500 text-xs italic mb-[12px]">{errors.name?.message}</p>}
         <PasswordInput 
           label="Password"
           placeholder="Password"
           mb={12}
           {...register('password')}
         />
-        {errors.password?.message && <p className="text-red-500 text-xs italic mb-[12px]">{errors.password?.message}</p>}
-        <PasswordInput 
-          label="Password"
-          placeholder="Password"
-          mb={12}
-          {...register('passwordConfirmation')}
-        />
-        {errors.passwordConfirmation?.message && <p className="text-red-500 text-xs italic mb-[12px]">{errors.passwordConfirmation?.message}</p>}
+        {errors.password?.message && <p className="text-red-500 text-xs italic mb-[12px]">{errors.password.message}</p>}
+        {loginError && <p className="text-red-500 text-xs italic mb-[12px]">{loginError}</p>}
         <Button
           type='submit'
           fullWidth
         >
-          Sign Up
+          Sign In
         </Button>
       </form>
-      <Link href="/accounts/signin" className="mt-2 text-slate-600 text-sm">
-          Do you have account? Sign In here.
+      <Link href="/accounts/signup" className="mt-2 text-slate-600 text-sm">
+        Do not you have an account? Sign Up here.
       </Link>
     </div>
   )
 }
 
-export default SignUpPage
+export default SignInPage

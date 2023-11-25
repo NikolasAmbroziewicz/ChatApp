@@ -1,13 +1,15 @@
 "use Client";
-import axios from 'axios'
+import { useState } from 'react'
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 import { signUpSchema, SignUpType } from '@/features/Accounts/validators'
+import { useAccountApi } from "@/features/Accounts/AccountApi";
 
 export const useSignUp = () => {
+  const [registerError, setRegisterError] = useState('')
   const router = useRouter()
   const {
     register,
@@ -18,12 +20,13 @@ export const useSignUp = () => {
   })
 
   const handleFormSubmit = async (values: SignUpType) => {
-    const res = await axios.post(`${String(process.env.NEXT_PUBLIC_BACKEND)}/v1/api/user`, {
-      ...values,
-    })
+    const { signUpUser } = useAccountApi()
+    const res = await signUpUser(values)
 
     if(res.status === 200) {
       router.push('/accounts/signin')
+    } else {
+      setRegisterError('Ups Sth went Wrong! Try again later!')
     }
   }
   
@@ -31,6 +34,7 @@ export const useSignUp = () => {
     handleFormSubmit,
     register,
     errors,
+    registerError,
     handleSubmit
   }
 }
