@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 import { signUpSchema, SignUpType } from '@/features/Accounts/validators'
-import { useAccountApi } from "@/features/Accounts/AccountApi";
+import { useAccountApi } from "@/features/Accounts/hooks/useAccountApi";
 
 export const useSignUp = () => {
   const [registerError, setRegisterError] = useState('')

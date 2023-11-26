@@ -2,7 +2,7 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-import { useAccountApi } from "@/features/Accounts/AccountApi";
+import { useAccountApi } from "@/features/Accounts/hooks/useAccountApi";
 
 async function refreshToken(session: JWT) {
   const { getSession } = useAccountApi()
