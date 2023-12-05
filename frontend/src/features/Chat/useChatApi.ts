@@ -1,13 +1,13 @@
-'use client'
+'use Client'
 import ApiBase from "@/shared/api/ApiBase"
 
 import { useSession } from "next-auth/react"
-import { CreateChatSchema } from '@/features/Chat/validators'
+import { ChatSchema } from '@/features/Chat/validators'
 
 export const useChatApi = () => {
-  const { data } = useSession()
+  const { data } = useSession()      
 
-  const createChat = async (value: CreateChatSchema) => {
+  const createChatApi = async (value: ChatSchema) => {
     return ApiBase().post('/v1/api/chat', {
       ...value
     }, {
@@ -18,7 +18,7 @@ export const useChatApi = () => {
     }).then((res) => res.data)
   }
 
-  const updateChat = async (id: number, value: CreateChatSchema) => {
+  const updateChatApi = async (id: number, value: ChatSchema) => {
     return ApiBase().put(`/v1/api/chat/${id}`, {
       ...value
     }, {
@@ -29,7 +29,7 @@ export const useChatApi = () => {
     }).then((res) => res.data)
   }
 
-  const deleteChat = async (id: number) => {
+  const deleteChatApi = async (id: number) => {
     return ApiBase().delete(`/v1/api/chat/${id}`, {
       headers: {
         Authorization: `Bearer ${data?.tokens.accessToken}`,
@@ -38,7 +38,7 @@ export const useChatApi = () => {
     }).then((res) => res.data)
   }
 
-  const getAllChats = async () => {
+  const getAllChatsApi = async () => {
     return ApiBase().get('/v1/api/chat', {
       headers: {
         Authorization: `Bearer ${data?.tokens.accessToken}`,
@@ -47,9 +47,9 @@ export const useChatApi = () => {
     }).then((res) => res.data)
   }
   return {
-    createChat,
-    deleteChat,
-    getAllChats,
-    updateChat
+    createChatApi,
+    deleteChatApi,
+    getAllChatsApi,
+    updateChatApi
   }
 }

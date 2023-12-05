@@ -1,4 +1,4 @@
-"use Client";
+"use client";
 import { useState } from 'react'
 import { useRouter } from "next/navigation";
 
@@ -23,7 +23,7 @@ export const useSignUp = () => {
     const { signUpUser } = useAccountApi()
     const res = await signUpUser(values)
 
-    if(res.status === 200) {
+    if(Boolean(res)) {
       router.push('/accounts/signin')
     } else {
       setRegisterError('Ups Sth went Wrong! Try again later!')

@@ -1,7 +1,8 @@
-import {object, string, TypeOf} from 'zod'
+import {object, string, TypeOf, date} from 'zod'
 
-const createChatSchema = object({
+export const chatSchema = object({
+  _id: string().optional(),
   name: string().min(1, 'Title is required')
 })
 
-export type CreateChatSchema = TypeOf<typeof createChatSchema>
+export type ChatSchema = TypeOf<typeof chatSchema>

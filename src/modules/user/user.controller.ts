@@ -6,6 +6,7 @@ import { signJwt } from '../../utils/jwt.utils'
 import logger from '../../utils/logger'
 import { createUser, validatePassword, createUserSession, findUserSession, updateSession } from './user.service'
 import { CreateUserInput } from './schema/user.schema'
+import { generateExpireTime } from '../../utils/time'
 
 export async function createUserHandler(req: Request<{}, {}, CreateUserInput['body']>, res: Response) {
   try {
@@ -56,7 +57,8 @@ export async function createUserSessionHandler(req: Request, res: Response) {
   return res.send({
     tokens: {
       accessToken,
-      refreshToken
+      refreshToken,
+      expiresIn: generateExpireTime()
     },
     user: {
       ...user
