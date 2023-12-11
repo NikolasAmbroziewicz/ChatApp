@@ -9,9 +9,6 @@ async function connect () {
     await mongoose.connect(dbUri)
     
     logger.info("MonogDB has been connected")
-
-    logger.info('Redis exist')
-
   } catch(e) {
     logger.error('Could not connect to DB')
     process.exit(1)
