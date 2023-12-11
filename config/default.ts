@@ -7,7 +7,7 @@ export default {
   socketPort: 80,
   dbUri: process.env.DB_URI,
   saltWorkFactor: 10,
-  accessTokenTimeToLive: '15m',
+  accessTokenTimeToLive: '1d',
   refreshTokenTimeToLive: '1y',
   privateKey: process.env.PRIVATE_KEY,
   publicKey: process.env.PUBLIC_KEY,
