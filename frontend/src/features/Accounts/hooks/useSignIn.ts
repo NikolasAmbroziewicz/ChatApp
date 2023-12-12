@@ -28,7 +28,7 @@ export const useSignIn = () => {
     })
 
     if (!res?.error) {
-      router.push('/')
+      router.push('/dashboard')
     } else {
       setLoginError(res.error)
     }
