@@ -12,5 +12,6 @@ export default {
   privateKey: process.env.PRIVATE_KEY,
   publicKey: process.env.PUBLIC_KEY,
   upstashRedisRestUrl: process.env.UPSTASH_REDIS_REST_URL,
-  origin: process.env.ORIGIN
+  origin: process.env.ORIGIN,
+  redisUri: process.env.REDIS_URI
 }
