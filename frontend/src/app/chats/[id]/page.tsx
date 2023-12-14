@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useRef, FormEvent } from 'react'
+import { useEffect, useState, useRef, FormEvent, useMemo } from 'react'
 
 import { useParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
@@ -28,7 +28,9 @@ const ChatPage = () => {
   }
 
   const handleSendMessage = async(event: FormEvent) => {
+    console.log('nhere?')
     event.preventDefault()
+
     socket?.emit('chat-message', {
       room: params.id,
       user: session?.user._id,
@@ -45,40 +47,38 @@ const ChatPage = () => {
     }
 
     const onMessage = (message: MessageType) => {
+      console.log('onMessafe', message)
       setMessages((prevMessages) => [...prevMessages, message])
 
       scrollToBottom()
     }
+    
 
-    // Check if User is in the Chat if this user is in the chat then does not send message again.
-    if(session?.user) {
-      console.log('join-room', session.user)
-      socket?.emit('join-room', {
-        room: params.id,
-        user: session?.user._id
-      })  
-    }
-
+    // Listeners
     socket?.on("connection", onConnection);
     socket?.on('message', onMessage)
+
+    // Emiters
+    socket?.emit('join-room')  
 
     return () => {
       socket?.off('connection', onConnection)
       socket?.off('message', onMessage)
     }
-  }, [socket, session?.user]);
+  }, [socket]);
 
   return (
-    <div className='flex justify-between flex-col gap-3 h-full max-h-[100vh] p-2'>
-      <div ref={chatContainer}  className='overflow-y-scroll'>
+    <div className='flex justify-between flex-col gap-3 h-full max-h-[100vh] p-2 overflow-hidden'>
+      <div ref={chatContainer}  className='flex flex-col overflow-y-scroll h-[100%]'>
         {
           messages.map((element, index) => (
             <Message
               key={index}
               author={element.user}
               date={element.date}
-              description={element?.message}
-              isAuthor={false}
+              message={element?.message}
+              type={element.type}
+              isAuthor={element.authorId === session?.user._id}
             />
           ))
         }

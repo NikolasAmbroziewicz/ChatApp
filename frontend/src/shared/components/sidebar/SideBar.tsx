@@ -39,7 +39,7 @@ const  SideBar = () => {
                 allChats.map((chat) => (
                   <Link
                     className='inline-block bg-blue-50 w-4/5 my-2 text-slate-700 text-center p-2 rounded cursor-pointer' 
-                    href={`/dashboard/${chat._id}`}
+                    href={`/chats/${chat._id}`}
                     key={chat._id}
                   >
                     <span>{chat.name}</span>
