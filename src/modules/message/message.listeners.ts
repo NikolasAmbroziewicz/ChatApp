@@ -1,17 +1,24 @@
-import config from 'config'
 import moment from 'moment'
 
-import { Server } from 'socket.io'
+import { Server, Socket } from 'socket.io'
 import { Server as HTTPServer } from 'http'
-
-import Redis from "ioredis"
 
 import { verifyJwt } from '../../utils/jwt.utils'
 import { JoinRoomType, MessageType } from './types'
 
-const REDIS_URI =  config.get<string>('redisUri')
-const redis = new Redis(REDIS_URI);
-const BOT_NAME = 'Admin'
+import { BOT_NAME, USER_NAME } from './consts'
+import { findUser } from '../user/user.service'
+
+const validateToken = (socket: Socket) => {
+  const accessToken = socket.handshake.auth.Authorization.split(' ')[1]
+
+  const { valid, decoded } = verifyJwt(accessToken)
+
+  return {
+    valid,
+    decoded 
+  }
+}
 
 const formatMsg = (message: string) => {
   return {
@@ -20,15 +27,19 @@ const formatMsg = (message: string) => {
   }
 }
 
+const getRoomId = (socket: Socket) => {
+  if (socket.handshake.query.roomId) {
+    return socket.handshake.query.roomId
+  } else {
+    return null
+  }
+}
+
 export async function messageListeners(app: HTTPServer) {
   const io = new Server(app)
 
   io.use(async (socket, next) => {
-    const accessToken = socket.handshake.auth.Authorization.split(' ')[1]
-
-    const { valid } = verifyJwt(accessToken)
-
-    console.log('valid', valid)
+    const { valid } = validateToken(socket)
 
     if (valid) {
       next();
@@ -39,37 +50,58 @@ export async function messageListeners(app: HTTPServer) {
 
   io.on('connection', socket => {
     socket.on('join-room', async (data: JoinRoomType) => {
-      socket.join(data.room)
-      const userExist = await redis.lpos(data.room, data.user)
+      const { decoded } = validateToken(socket)
+      
+      if (decoded?._id) {
+        socket.join(getRoomId(socket) as string)
 
-      if(userExist === null) {
-        await redis.lpush(data.room, data.user)
+        const user = await findUser({_id: String(decoded._id)})
 
         socket.emit('message', {
           type: BOT_NAME,
-          user: data.user,
+          user: BOT_NAME,
           date: moment().format('h:mm a'),
-          message: `Welcome to chat!`
+          message: `Welcome ${user?.name} to chat!`
         })
   
-        socket.broadcast.to(data.room).emit('message', `${data.user} has join the chat`)
-      } else {
-        console.log('userExist', userExist)
+        socket.broadcast.to(getRoomId(socket) as string).emit('message', {
+          type: BOT_NAME,
+          user: BOT_NAME,
+          date: moment().format('h:mm a'),
+          message: `${user?.name} has join the chat`
+        })
       }
     })
 
-    socket.on('chat-message', (data: MessageType) => {
-      io.to(data.room).emit('message', {
-        type: 'User',
-        user: data.user,
-        date: moment().format('h:mm a'),
-        message: data.message
-      })
+    socket.on('chat-message', async (data: MessageType) => {
+      const { decoded } = validateToken(socket)
+
+      if (decoded?._id) {
+        const user = await findUser({_id: String(decoded._id)})
+
+        io.to(data.room).emit('message', {
+          type: USER_NAME,
+          user: user?.name,
+          date: moment().format('h:mm a'),
+          message: data.message,
+          authorId: decoded._id 
+        })
+      }
     })
 
-    socket.on('disconnect', () => {
-      // Remover User from Redis room
-      console.log('Disconect')
+    socket.on('disconnect', async () => {
+      const { decoded } = validateToken(socket)
+
+      if (decoded?._id) {
+        const user = await findUser({_id: String(decoded._id)})
+
+        socket.broadcast.to(getRoomId(socket) as string).emit('message', {
+          type: BOT_NAME,
+          user: BOT_NAME,
+          date: moment().format('h:mm a'),
+          message: `${user?.name} has left the chat`
+        })
+      }
     })
   })
 }
