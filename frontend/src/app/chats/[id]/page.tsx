@@ -91,7 +91,7 @@ const ChatPage = () => {
           onChange={(val) => setMessageInput(val.target.value)}
         />
         <Button
-          color='rgb(191 219 254)'
+          color='cyan'
           type="submit"
         >
           Send
