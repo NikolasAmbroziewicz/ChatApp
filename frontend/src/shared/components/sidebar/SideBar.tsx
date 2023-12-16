@@ -8,27 +8,12 @@ import { useEffect } from 'react'
 
 import { AiFillEdit, AiOutlineClose } from "react-icons/ai";
 
-import { useChat } from "@/features/Chat/hooks/useChat";
+import { useChatContext } from '@/context/ChatContext';
 
 const  SideBar = () => {
   const params = useParams()
 
-  const { 
-    allChats,
-    createChat,
-    deleteChat,
-    getAllChats,
-    loading,
-    updateChat,
-  } = useChat()
-  const { data } = useSession()
-
-  useEffect(() => {
-    if (data?.tokens) {
-      getAllChats()
-    }
-
-  }, [data])
+  const { allChats, loading, deleteChat } = useChatContext()
 
   const activeStyles = (id: string | undefined) => {
     if (params.id === id) {
@@ -67,7 +52,7 @@ const  SideBar = () => {
                       key={chat._id}
                     >
                       <div className='flex items-center justify-between'>
-                        <span>{chat.name}</span>
+                        <span>{chat.title}</span>
                         <div className='flex gap-2'>
                           <AiFillEdit />
                           <AiOutlineClose onClick={() => deleteChat(chat._id)} />

@@ -6,6 +6,7 @@ import '@mantine/core/styles.css'
 
 import { MantineProvider } from '@mantine/core'
 import AuthProvider from '@/shared/auth/AuthProvider';
+import { ChatContextProvider } from '@/context/ChatContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,7 +25,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <MantineProvider>
           <AuthProvider>
-            {children}
+            <ChatContextProvider>
+              {children}
+            </ChatContextProvider>
           </AuthProvider>
         </MantineProvider>
       </body>
