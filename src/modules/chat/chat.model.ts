@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { UserDocument } from "../user/models/user.model";
 
 export interface ChatInput {
-  name: string,
+  title: string,
   user: UserDocument['_id']
 }
 
@@ -13,7 +13,7 @@ export interface ChatDocument extends ChatInput {
 
 const chatSchema = new mongoose.Schema(
   {
-    name: {
+    title: {
       type: String
     },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

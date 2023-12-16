@@ -2,8 +2,8 @@ import { TypeOf, object, string } from 'zod';
 
 const payload = {
   body: object({
-    name: string ({
-      required_error: 'Name of the chat is required',
+    title: string ({
+      required_error: 'Title of the chat is required',
     }),
   })
 }
