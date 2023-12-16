@@ -16,7 +16,6 @@ import {
 } from './chat.schema'
 
 import logger from '../../utils/logger'
-import ChatModel from './chat.model'
 
 export async function createChatController(req: Request<{}, {}, CreateChatInput['body']>, res: Response) {
   try {

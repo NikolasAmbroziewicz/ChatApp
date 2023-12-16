@@ -28,7 +28,6 @@ const ChatPage = () => {
   }
 
   const handleSendMessage = async(event: FormEvent) => {
-    console.log('nhere?')
     event.preventDefault()
 
     socket?.emit('chat-message', {
