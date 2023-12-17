@@ -18,21 +18,29 @@ const CreateChatForm = () => {
     resolver: zodResolver(manageChatSchema)
   })
 
-  const { createChat } = useChatContext()
+  const { createChat, toggleModalVisibility } = useChatContext()
 
   const handleFormSubmit = (val: ManageChatSchema) => {
     createChat(val.title)
+    toggleModalVisibility()
   }
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)}>
+    <form 
+      className="flex flex-col"
+      onSubmit={handleSubmit(handleFormSubmit)}
+    >
       <Input 
         {...register('title')}
+        mb={8}
       />
+      {errors.title?.message && <p className="text-red-500 text-xs italic mb-[12px]">{errors.title?.message}</p>}
       <Button 
         type="submit"
         color='#bfdbfe' 
         w={"60%"}
+        m={"auto"}
+        mt={8}
       >
         Create New Chat
       </Button>

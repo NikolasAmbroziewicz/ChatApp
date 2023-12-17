@@ -4,8 +4,8 @@ import Link from 'next/link';
 
 import { useParams } from 'next/navigation'
 import { useSession } from 'next-auth/react';
-import { useEffect } from 'react'
 
+import { Button } from '@mantine/core'
 import { AiFillEdit, AiOutlineClose } from "react-icons/ai";
 
 import { useChatContext } from '@/context/ChatContext';
@@ -13,7 +13,8 @@ import { useChatContext } from '@/context/ChatContext';
 const  SideBar = () => {
   const params = useParams()
 
-  const { allChats, loading, deleteChat } = useChatContext()
+  const { allChats, loading, deleteChat, toggleModalVisibility } = useChatContext()
+  const { data: session } = useSession()
 
   const activeStyles = (id: string | undefined) => {
     if (params.id === id) {
@@ -21,6 +22,10 @@ const  SideBar = () => {
     } else {
       return 'bg-blue-50 border-blue-50 border-[1px] text-slate-500'
     }
+  }
+
+  const chatCreator = (id: string | undefined) => {
+    return session?.user._id === id
   }
 
   return (
@@ -53,14 +58,25 @@ const  SideBar = () => {
                     >
                       <div className='flex items-center justify-between'>
                         <span>{chat.title}</span>
-                        <div className='flex gap-2'>
-                          <AiFillEdit />
-                          <AiOutlineClose onClick={() => deleteChat(chat._id)} />
-                        </div>
+                        {
+                          chatCreator(chat?.user) && (
+                            <div className='flex gap-2'>
+                            <AiFillEdit />
+                            <AiOutlineClose onClick={() => deleteChat(chat._id)} />
+                          </div>
+                          )
+                        }
                       </div>
                     </Link>
                   ))
                 }
+                <Button 
+                  onClick={toggleModalVisibility}
+                  color='#bfdbfe'
+                  w={'60%'}
+                >
+                  Create New Chat
+                </Button>
               </>
             )
           )

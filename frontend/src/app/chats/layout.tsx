@@ -3,7 +3,7 @@ import { ReactNode } from "react"
 
 import { Grid, Modal } from '@mantine/core'
 import SideBar from '@/shared/components/sidebar/SideBar'
-import CreateChatForm from "@/features/Chat/components/CreateForm"
+import CreateForm from "@/features/Chat/components/CreateForm"
 
 import { useChatContext } from "@/context/ChatContext"
 
@@ -19,8 +19,8 @@ const { modalVisibility, toggleModalVisibility } = useChatContext()
           {children}
         </Grid.Col>
       </Grid>
-      <Modal opened={modalVisibility} onClose={toggleModalVisibility}>
-        <CreateChatForm />
+      <Modal opened={modalVisibility} onClose={toggleModalVisibility} title="Create New Chat">
+        <CreateForm />
       </Modal>
     </div>
   )
