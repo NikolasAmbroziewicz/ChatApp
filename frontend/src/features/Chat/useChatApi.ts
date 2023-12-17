@@ -29,7 +29,7 @@ export const useChatApi = () => {
     }).then((res) => res.data)
   }
 
-  const deleteChatApi = async (id: number) => {
+  const deleteChatApi = async (id: string) => {
     return ApiBase().delete(`/v1/api/chat/${id}`, {
       headers: {
         Authorization: `Bearer ${data?.tokens.accessToken}`,

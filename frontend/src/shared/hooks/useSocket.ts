@@ -20,7 +20,6 @@ export const useSocket = () => {
   }, [session?.tokens.accessToken, session?.tokens.refreshToken])
 
   useEffect(() => {
-    console.log('status', params.id)
     if (session?.tokens) {
       const socketIo = io(String(process.env.NEXT_PUBLIC_BACKEND), {
         reconnection: true,

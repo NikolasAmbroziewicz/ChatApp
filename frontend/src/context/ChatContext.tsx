@@ -71,10 +71,11 @@ export function ChatContextProvider({ children }: { children: React.ReactNode })
   }
 
   const deleteChat = async (id: string | undefined) => {
-    if (id !== undefined) {
-      const res: ChatSchema = await deleteChatApi(+id)
-    }
+    if (id === undefined) return 
     
+    const res: ChatSchema = await deleteChatApi(id)
+    
+    setAllChats((prevChats) => prevChats.filter((chat) => chat._id !== res._id))
   }
 
   const toggleModalVisibility = () => {

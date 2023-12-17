@@ -83,13 +83,13 @@ export async function deleteChatController(
     })
   }
 
-  const product = await findChat({ _id: chatId });
+  const chat = await findChat({ _id: chatId });
 
-  if (String(product?.user) !== userId) {
+  if (String(chat?.user) !== userId) {
     return res.sendStatus(403);
   }
 
   await deleteChat({ _id: chatId })
 
-  return res.sendStatus(200);
+  return res.send(chat);
 }
