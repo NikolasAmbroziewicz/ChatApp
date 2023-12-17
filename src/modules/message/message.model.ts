@@ -3,8 +3,9 @@ import { UserDocument } from "../user/models/user.model";
 import { ChatDocument } from "../chat/chat.model";
 
 export interface MessageInput {
-  name: string,
-  user: UserDocument['_id']
+  user: UserDocument['_id'],
+  chat: ChatDocument['_id']
+  content: string
 }
 
 export interface MessageDocument extends MessageInput {

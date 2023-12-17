@@ -6,7 +6,7 @@ export interface ChatInput {
   user: UserDocument['_id']
 }
 
-export interface ChatDocument extends ChatInput {
+export interface ChatDocument extends ChatInput, mongoose.Document {
   createdAt: Date,
   updateAt: Date
 }

@@ -1,39 +1,13 @@
 import moment from 'moment'
-
-import { Server, Socket } from 'socket.io'
+import { Server } from 'socket.io'
 import { Server as HTTPServer } from 'http'
 
-import { verifyJwt } from '../../utils/jwt.utils'
-import { JoinRoomType, MessageType } from './types'
+import { findUser } from '../user/user.service'
+import { validateToken, getRoomId } from './message.utils'
 
 import { BOT_NAME, USER_NAME } from './consts'
-import { findUser } from '../user/user.service'
-
-const validateToken = (socket: Socket) => {
-  const accessToken = socket.handshake.auth.Authorization.split(' ')[1]
-
-  const { valid, decoded } = verifyJwt(accessToken)
-
-  return {
-    valid,
-    decoded 
-  }
-}
-
-const formatMsg = (message: string) => {
-  return {
-    content: message,
-    date: moment().format('h:mm a')
-  }
-}
-
-const getRoomId = (socket: Socket) => {
-  if (socket.handshake.query.roomId) {
-    return socket.handshake.query.roomId
-  } else {
-    return null
-  }
-}
+import { JoinRoomType, MessageType } from './types'
+import { createMessage } from './message.service'
 
 export async function messageListeners(app: HTTPServer) {
   const io = new Server(app)
@@ -78,6 +52,11 @@ export async function messageListeners(app: HTTPServer) {
 
       if (decoded?._id) {
         const user = await findUser({_id: String(decoded._id)})
+        await createMessage({
+          user: user?._id,
+          chat: data.room,
+          content: data.message
+        })
 
         io.to(data.room).emit('message', {
           type: USER_NAME,
