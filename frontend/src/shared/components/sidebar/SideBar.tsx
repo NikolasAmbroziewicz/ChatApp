@@ -13,7 +13,7 @@ import { useChatContext } from '@/context/ChatContext';
 const  SideBar = () => {
   const params = useParams()
 
-  const { allChats, loading, deleteChat, toggleModalVisibility } = useChatContext()
+  const { allChats, deleteChat, handleEditedChat, updateChat, loading, toggleModalVisibility } = useChatContext()
   const { data: session } = useSession()
 
   const activeStyles = (id: string | undefined) => {
@@ -61,9 +61,9 @@ const  SideBar = () => {
                         {
                           chatCreator(chat?.user) && (
                             <div className='flex gap-2'>
-                            <AiFillEdit />
-                            <AiOutlineClose onClick={() => deleteChat(chat._id)} />
-                          </div>
+                              <AiFillEdit onClick={() => handleEditedChat(chat)} />
+                              <AiOutlineClose onClick={() => deleteChat(chat._id)} />
+                            </div>
                           )
                         }
                       </div>

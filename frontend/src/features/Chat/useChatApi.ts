@@ -18,7 +18,7 @@ export const useChatApi = () => {
     }).then((res) => res.data)
   }
 
-  const updateChatApi = async (id: number, value: ChatSchema) => {
+  const updateChatApi = async (id: string, value: ChatSchema) => {
     return ApiBase().put(`/v1/api/chat/${id}`, {
       ...value
     }, {

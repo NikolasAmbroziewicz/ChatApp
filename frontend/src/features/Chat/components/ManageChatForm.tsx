@@ -1,4 +1,6 @@
 'use client'
+
+import { useEffect } from 'react'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -8,27 +10,52 @@ import { useChatContext } from "@/context/ChatContext";
 
 import { manageChatSchema, ManageChatSchema } from "../validators";
 
-const CreateChatForm = () => {
-
+const ManageChatForm = () => {
   const {
     register, 
     formState: { errors },
-    handleSubmit
+    handleSubmit,
+    setValue
   } = useForm<ManageChatSchema>({
     resolver: zodResolver(manageChatSchema)
   })
 
-  const { createChat, toggleModalVisibility } = useChatContext()
+  const { 
+    createChat, 
+    editedChatValue,
+    toggleModalVisibility,
+    updateChat
+  } = useChatContext()
 
-  const handleFormSubmit = (val: ManageChatSchema) => {
+  const handleAddChat = (val: ManageChatSchema) => {
     createChat(val.title)
     toggleModalVisibility()
   }
 
+  const handleEditChat = (val: ManageChatSchema) => {
+    if (editedChatValue?._id === undefined) return
+
+    updateChat( editedChatValue?._id ,val.title)
+    toggleModalVisibility()
+  }
+ 
+  useEffect(() => {
+    console.log('edited', editedChatValue)
+
+    if (editedChatValue !== null) {
+      setValue('title', editedChatValue.title)
+    }
+
+  }, [editedChatValue])
+
   return (
     <form 
       className="flex flex-col"
-      onSubmit={handleSubmit(handleFormSubmit)}
+      onSubmit={handleSubmit(
+        editedChatValue !== null 
+        ? (data) => handleEditChat(data)
+        : (data) => handleAddChat(data)
+      )}
     >
       <Input 
         {...register('title')}
@@ -42,10 +69,10 @@ const CreateChatForm = () => {
         m={"auto"}
         mt={8}
       >
-        Create New Chat
+        Submit
       </Button>
     </form>
   )
 }
 
-export default CreateChatForm;
+export default ManageChatForm;
