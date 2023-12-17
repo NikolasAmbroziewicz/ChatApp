@@ -1,9 +1,11 @@
 export type MessageType = {
   type: string,
-  user: string,
+  user: {
+    _id: string,
+    name: string
+  },
   date: string,
   message: string,
-  authorId?: boolean
 }
 
 export type JoinRoomType = {

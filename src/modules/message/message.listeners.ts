@@ -7,7 +7,7 @@ import { validateToken, getRoomId } from './message.utils'
 
 import { BOT_NAME, USER_NAME } from './consts'
 import { JoinRoomType, MessageType } from './types'
-import { createMessage } from './message.service'
+import { createMessage, findMessages } from './message.service'
 
 export async function messageListeners(app: HTTPServer) {
   const io = new Server(app)
@@ -27,9 +27,23 @@ export async function messageListeners(app: HTTPServer) {
       const { decoded } = validateToken(socket)
       
       if (decoded?._id) {
-        socket.join(getRoomId(socket) as string)
+        const roomId = getRoomId(socket) as string
+
+        socket.join(roomId)
 
         const user = await findUser({_id: String(decoded._id)})
+        const messages = await findMessages(roomId)
+
+        socket.emit('previous-messages', messages.map((message) => ({
+          type: USER_NAME,
+          user: {
+            _id: message.user._id,
+            name: message.user.name,
+          },
+          date: message.createdAt,
+          message: message.content,
+          authorId: message.user._id
+        })))
 
         socket.emit('message', {
           type: BOT_NAME,
@@ -38,7 +52,7 @@ export async function messageListeners(app: HTTPServer) {
           message: `Welcome ${user?.name} to chat!`
         })
   
-        socket.broadcast.to(getRoomId(socket) as string).emit('message', {
+        socket.broadcast.to(roomId).emit('message', {
           type: BOT_NAME,
           user: BOT_NAME,
           date: moment().format('h:mm a'),

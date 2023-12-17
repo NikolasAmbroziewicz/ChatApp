@@ -19,6 +19,10 @@ const messageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId, 
       ref: "User"
     },
+    chat: {
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: "Chat"
+    },
     content: {
       type: String
     }

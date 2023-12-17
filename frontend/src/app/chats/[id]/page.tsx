@@ -52,10 +52,14 @@ const ChatPage = () => {
       scrollToBottom()
     }
     
+    const onPreviousMessages = (messages: MessageType[]) => {
+      setMessages(messages)
+    }
 
     // Listeners
     socket?.on("connection", onConnection);
     socket?.on('message', onMessage)
+    socket?.on('previous-messages', onPreviousMessages)
 
     // Emiters
     socket?.emit('join-room')  
@@ -73,11 +77,11 @@ const ChatPage = () => {
           messages.map((element, index) => (
             <Message
               key={index}
-              author={element.user}
+              author={element.user.name}
               date={element.date}
               message={element?.message}
               type={element.type}
-              isAuthor={element.authorId === session?.user._id}
+              isAuthor={element.user._id === session?.user._id}
             />
           ))
         }
