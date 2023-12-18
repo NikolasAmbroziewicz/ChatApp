@@ -5,7 +5,7 @@ import { ChatDocument } from "../chat/chat.model";
 export interface MessageInput {
   user: UserDocument['_id'],
   chat: ChatDocument['_id']
-  content: string
+  content: string | undefined
 }
 
 export interface MessageDocument extends MessageInput {
