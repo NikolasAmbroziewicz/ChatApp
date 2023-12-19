@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 
 import { 
   useChatApi
-} from '@/features/Chat/useChatApi'
+} from '@/features/Chat/api/useChatApi'
 
 import { ChatSchema } from '@/features/Chat/validators'
 

@@ -1,4 +1,4 @@
-'use Client'
+'use client'
 import ApiBase from "@/shared/api/ApiBase"
 
 import { useSession } from "next-auth/react"
@@ -33,8 +33,8 @@ export const useChatApi = () => {
     return ApiBase().delete(`/v1/api/chat/${id}`, {
       headers: {
         Authorization: `Bearer ${data?.tokens.accessToken}`,
-        'x-refresh': data?.tokens.refreshToken
-      }
+        'x-refresh': data?.tokens.refreshToken,
+      },
     }).then((res) => res.data)
   }
 

@@ -8,7 +8,7 @@ import { ChatInput, UpdateMessageInput } from './message.schema'
 import { USER_NAME } from './consts'
 
 export async function getMessagesController(
-  req: Request<ChatInput>, 
+  req: Request<ChatInput['params']>, 
   res: Response
   ) {
   const chatId = req.params.chatId

@@ -12,7 +12,7 @@ import {
 import { chatParams, deleteMessageParams, updateMessagePayload } from './message.schema'
 
 export function routes(app: Express) {
-  app.get('/v1/api/message/:chatId', getMessagesController)
+  app.get('/v1/api/message/:chatId', [requireUser, validateResource(chatParams)], getMessagesController)
   app.put('/v1/api/message/:messageId', [requireUser, validateResource(updateMessagePayload)], updateMessageController)
   app.delete('/v1/api/message/:messageId', [requireUser, validateResource(deleteMessageParams), deleteMessageController])
 }

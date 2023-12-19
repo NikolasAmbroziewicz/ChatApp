@@ -1,9 +1,11 @@
 import { TypeOf, object, string } from 'zod'
 
 export const chatParams = object({
-  chatId: string({
-    required_error: "productId is required",
-  }),
+  params: object({
+    chatId: string({
+      required_error: "productId is required",
+    }),
+  })
 })
 
 export const deleteMessageParams = object({
