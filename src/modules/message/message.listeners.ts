@@ -1,3 +1,5 @@
+import mongoose from 'mongoose'
+
 import moment from 'moment'
 import { Server } from 'socket.io'
 import { Server as HTTPServer } from 'http'
@@ -6,8 +8,9 @@ import { findUser } from '../user/user.service'
 import { validateToken, getRoomId } from './message.utils'
 
 import { BOT_NAME, USER_NAME } from './consts'
-import { JoinRoomType, MessageType } from './types'
-import { createMessage, findMessages } from './message.service'
+import { DeleteMessageType ,JoinRoomType, MessageType } from './types'
+import { createMessage, findMessages, updateMessage } from './message.service'
+
 
 export async function messageListeners(app: HTTPServer) {
   const io = new Server(app)
@@ -35,6 +38,7 @@ export async function messageListeners(app: HTTPServer) {
         const messages = await findMessages(roomId)
 
         socket.emit('previous-messages', messages.map((message) => ({
+          _id: message._id,
           type: USER_NAME,
           user: {
             _id: message.user._id,
@@ -66,18 +70,21 @@ export async function messageListeners(app: HTTPServer) {
 
       if (decoded?._id) {
         const user = await findUser({_id: String(decoded._id)})
-        await createMessage({
+        const message = await createMessage({
           user: user?._id,
           chat: data.room,
           content: data.message
         })
 
         io.to(data.room).emit('message', {
+          _id: message._id,
           type: USER_NAME,
-          user: user?.name,
+          user: {
+            _id: message.user,
+            name: user?.name,
+          },
           date: moment().format('h:mm a'),
           message: data.message,
-          authorId: decoded._id 
         })
       }
     })
@@ -93,6 +100,36 @@ export async function messageListeners(app: HTTPServer) {
           user: BOT_NAME,
           date: moment().format('h:mm a'),
           message: `${user?.name} has left the chat`
+        })
+      }
+    })
+
+    socket.on('update-message', () => {
+    })
+
+    socket.on('delete-message',async (data: DeleteMessageType) => {
+      if(!mongoose.Types.ObjectId.isValid(data.messageId)) {
+        socket.emit('error', {
+          error:'Invalid Message Id'
+        })
+      } else {
+        const roomId = getRoomId(socket) as string
+      
+        const message = await updateMessage({ 
+          _id: data.messageId 
+        }, {
+          content: null
+        }, {})
+
+        io.to(roomId).emit('delete-message', {
+          _id: message?._id,
+          type: USER_NAME,
+          user: {
+            _id: message?.user._id,
+            name: message?.user.name,
+          },
+          date: moment().format('h:mm a'),
+          message: message?.content,
         })
       }
     })

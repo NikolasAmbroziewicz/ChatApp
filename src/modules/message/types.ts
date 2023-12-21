@@ -8,3 +8,7 @@ export type MessageType = {
   user: string,
   message: string
 }
+
+export type DeleteMessageType = {
+  messageId: string
+}

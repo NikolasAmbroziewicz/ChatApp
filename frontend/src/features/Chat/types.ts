@@ -1,4 +1,5 @@
 export type MessageType = {
+  _id?: string,
   type: string,
   user: {
     _id: string,

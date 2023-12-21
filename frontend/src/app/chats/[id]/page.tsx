@@ -4,11 +4,11 @@ import { useEffect, useState, useRef, FormEvent, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 
-import { useSocket } from '@/shared/hooks/useSocket'
-
 import { Textarea, Button } from '@mantine/core'
+
 import Message from '@/features/Chat/components/Message'
 
+import { useSocket } from '@/shared/hooks/useSocket'
 import { MessageType } from '@/features/Chat/types'
 
 const ChatPage = () => {
@@ -20,6 +20,46 @@ const ChatPage = () => {
   const socket = useSocket()
   const { data: session } = useSession()
 
+  useEffect(() => {
+    const onMessage = (message: MessageType) => {
+      setMessages((prevMessages) => [...prevMessages, message])
+
+      scrollToBottom()
+    }
+    
+    const onPreviousMessages = (messages: MessageType[]) => {
+      setMessages(messages)
+    }
+
+    const onDeleteMessage = (message: MessageType) => {
+      const idx = messages.findIndex((chat) => chat._id === message._id)
+      const newMessages = [...messages]
+      newMessages[idx] = message
+
+      setMessages(newMessages)
+    }
+
+    const onMessageUpdate = () => {
+      console.log('message Update')
+    }
+
+    // Listeners
+    socket?.on('message', onMessage)
+    socket?.on('previous-messages', onPreviousMessages)
+    socket?.on('delete-message', onDeleteMessage)
+    socket?.on('update-message', onMessageUpdate)
+
+    // Emiters
+    socket?.emit('join-room') 
+
+    return () => {
+      socket?.off('message', onMessage)
+      socket?.off('previous-messages', onPreviousMessages)
+      socket?.off('delete-message', onDeleteMessage)
+      socket?.off('update-message', onMessageUpdate)
+    }
+  }, [socket]);
+
   const scrollToBottom = () => {
     if(chatContainer.current) {
       chatContainer.current.scrollTop =
@@ -27,7 +67,7 @@ const ChatPage = () => {
     }
   }
 
-  const handleSendMessage = async(event: FormEvent) => {
+  const handleAddMessage = async(event: FormEvent) => {
     event.preventDefault()
 
     socket?.emit('chat-message', {
@@ -40,35 +80,15 @@ const ChatPage = () => {
     scrollToBottom()
   }
 
-  useEffect(() => {
-    const onConnection = () => {
-      console.log("connected to socket");
-    }
+  const handleUpdateMessage = () => {
 
-    const onMessage = (message: MessageType) => {
-      console.log('onMessafe', message)
-      setMessages((prevMessages) => [...prevMessages, message])
+  }
 
-      scrollToBottom()
-    }
-    
-    const onPreviousMessages = (messages: MessageType[]) => {
-      setMessages(messages)
-    }
-
-    // Listeners
-    socket?.on("connection", onConnection);
-    socket?.on('message', onMessage)
-    socket?.on('previous-messages', onPreviousMessages)
-
-    // Emiters
-    socket?.emit('join-room')  
-
-    return () => {
-      socket?.off('connection', onConnection)
-      socket?.off('message', onMessage)
-    }
-  }, [socket]);
+  const handleDeleteMessage = async (messageId: string | undefined) => {
+    socket?.emit('delete-message', {
+      messageId: messageId
+    })
+  }
 
   return (
     <div className='flex justify-between flex-col gap-3 h-full max-h-[100vh] p-2 overflow-hidden'>
@@ -77,16 +97,15 @@ const ChatPage = () => {
           messages.map((element, index) => (
             <Message
               key={index}
-              author={element.user.name}
-              date={element.date}
-              message={element?.message}
-              type={element.type}
+              element={element}
               isAuthor={element.user._id === session?.user._id}
+              handleDeleteMessage={handleDeleteMessage}
+              handleUpdateMessage={handleUpdateMessage}
             />
           ))
         }
       </div>
-      <form onSubmit={(val) => handleSendMessage(val)} className='flex flex-col'>
+      <form onSubmit={(val) => handleAddMessage(val)} className='flex flex-col'>
         <Textarea
           className='pb-2'
           placeholder='Message'

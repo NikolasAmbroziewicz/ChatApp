@@ -27,7 +27,7 @@ export async function updateMessage(
   options: QueryOptions
 ) {
   try {
-    return MessageModel.findOneAndUpdate(query, update, {new: true})
+    return MessageModel.findOneAndUpdate(query, update, {new: true}).populate({ path: 'user' })
   } catch(e: any) {
     throw new Error(e)
   }
