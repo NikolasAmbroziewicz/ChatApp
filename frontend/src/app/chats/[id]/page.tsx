@@ -13,30 +13,30 @@ import { MessageType } from '@/features/Chat/types'
 
 const ChatPage = () => {
   const chatContainer = useRef<HTMLDivElement | null>(null)
-  const [messages, setMessages] = useState<MessageType[]>([])
+  const [allMessages, setAllMessages] = useState<MessageType[]>([])
   const [messageInput, setMessageInput] = useState<string>('')
 
   const params = useParams()
   const socket = useSocket()
   const { data: session } = useSession()
 
+  const onDeleteMessage = (deletedMessage: MessageType) => {
+    setAllMessages((messages) => {
+      const newMessages = [...messages]
+      const idx = messages.findIndex((message) => message._id === deletedMessage._id)
+      newMessages[idx] = deletedMessage
+      return newMessages
+    })
+  }
+
   useEffect(() => {
     const onMessage = (message: MessageType) => {
-      setMessages((prevMessages) => [...prevMessages, message])
-
+      setAllMessages((prevMessages) => [...prevMessages, message])
       scrollToBottom()
     }
     
-    const onPreviousMessages = (messages: MessageType[]) => {
-      setMessages(messages)
-    }
-
-    const onDeleteMessage = (message: MessageType) => {
-      const idx = messages.findIndex((chat) => chat._id === message._id)
-      const newMessages = [...messages]
-      newMessages[idx] = message
-
-      setMessages(newMessages)
+    const onPreviousMessages = (allMessagesRes: MessageType[]) => {
+      setAllMessages(allMessagesRes)
     }
 
     const onMessageUpdate = () => {
@@ -70,19 +70,19 @@ const ChatPage = () => {
   const handleAddMessage = async(event: FormEvent) => {
     event.preventDefault()
 
-    socket?.emit('chat-message', {
-      room: params.id,
-      user: session?.user._id,
-      message: messageInput
-    })
-
-    setMessageInput('')
-    scrollToBottom()
+    if(messageInput !== '') {
+      socket?.emit('chat-message', {
+        room: params.id,
+        user: session?.user._id,
+        message: messageInput
+      })
+  
+      setMessageInput('')
+      scrollToBottom()
+    }
   }
 
-  const handleUpdateMessage = () => {
-
-  }
+  const handleUpdateMessage = () => {}
 
   const handleDeleteMessage = async (messageId: string | undefined) => {
     socket?.emit('delete-message', {
@@ -94,7 +94,7 @@ const ChatPage = () => {
     <div className='flex justify-between flex-col gap-3 h-full max-h-[100vh] p-2 overflow-hidden'>
       <div ref={chatContainer}  className='flex flex-col overflow-y-scroll h-[100%]'>
         {
-          messages.map((element, index) => (
+          allMessages.map((element, index) => (
             <Message
               key={index}
               element={element}

@@ -15,7 +15,11 @@ export async function findMessages(input: string) {
       chat: {
         _id: input
       }
-    }).populate({ path: 'user' }).limit(10)
+    })
+      .populate({ path: 'user' })
+      .sort({$natural: -1 })
+      .limit(10)
+      .then((res) => res.reverse())
   } catch(e: any) {
     throw new Error(e)
   }
