@@ -3,6 +3,8 @@ import { Menu } from '@mantine/core';
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdEdit, MdDelete } from "react-icons/md";
 
+import EditMessage from './EditMessage';
+
 import { MessageType } from '../types';
 
 import { BOT_NAME } from '@/consts';
@@ -12,7 +14,7 @@ interface IMessage {
   element: MessageType
   isAuthor: boolean,
   handleDeleteMessage: (id: string | undefined) => void,
-  handleUpdateMessage: () => void
+  handleUpdateMessage: (content: string, messageId: string) => void
 }
 
 const Message: React.FC<IMessage> = ({
@@ -24,6 +26,10 @@ const Message: React.FC<IMessage> = ({
   const [editMode, setEditMode] = useState<boolean>(false)
 
   const { _id ,message, date, user, type } = element
+
+  const handleEditMode = ( ) => {
+    setEditMode(!editMode)
+  }
 
   return (
     type === BOT_NAME ? (
@@ -51,7 +57,7 @@ const Message: React.FC<IMessage> = ({
                   <Menu.Dropdown>
                     <Menu.Item 
                       leftSection={<MdEdit />}
-                      onClick={() => handleUpdateMessage()}
+                      onClick={() => handleEditMode()}
                     >
                       Edit
                     </Menu.Item>
@@ -69,9 +75,17 @@ const Message: React.FC<IMessage> = ({
         </div>
         <span className="text-slate-50">
           {
-            message 
+            editMode ? (
+              <EditMessage 
+                message={element}
+                handleEditMode={handleEditMode}
+                handleUpdateMessage={handleUpdateMessage}
+              />
+            ): (
+              message 
               ? message
               : "Message Has Been Deleted"
+            )
           }
         </span>
       </div>

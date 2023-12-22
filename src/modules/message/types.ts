@@ -9,6 +9,10 @@ export type MessageType = {
   message: string
 }
 
-export type DeleteMessageType = {
+export interface DeleteMessageType {
   messageId: string
+}
+
+export interface UpdateMessageType extends DeleteMessageType {
+  content: string
 }

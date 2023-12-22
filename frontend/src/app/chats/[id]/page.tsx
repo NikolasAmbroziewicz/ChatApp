@@ -39,8 +39,13 @@ const ChatPage = () => {
       setAllMessages(allMessagesRes)
     }
 
-    const onMessageUpdate = () => {
-      console.log('message Update')
+    const onMessageUpdate = (updatedMessage: MessageType) => {
+      setAllMessages((messages) => {
+        const newMessages = [...messages]
+        const idx = messages.findIndex((message) => message._id === updatedMessage._id)
+        newMessages[idx] = updatedMessage
+        return newMessages
+      })
     }
 
     // Listeners
@@ -63,7 +68,7 @@ const ChatPage = () => {
   const scrollToBottom = () => {
     if(chatContainer.current) {
       chatContainer.current.scrollTop =
-      chatContainer.current.scrollHeight + 1000;
+      chatContainer.current.scrollHeight + 10000;
     }
   }
 
@@ -82,7 +87,13 @@ const ChatPage = () => {
     }
   }
 
-  const handleUpdateMessage = () => {}
+  const handleUpdateMessage = (content: string, messageId: string) => {
+    console.log('content', content)
+    socket?.emit('update-message', {
+      messageId: messageId,
+      content: content
+    })
+  }
 
   const handleDeleteMessage = async (messageId: string | undefined) => {
     socket?.emit('delete-message', {

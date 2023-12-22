@@ -8,7 +8,14 @@ import { findUser } from '../user/user.service'
 import { validateToken, getRoomId } from './message.utils'
 
 import { BOT_NAME, USER_NAME } from './consts'
-import { DeleteMessageType ,JoinRoomType, MessageType } from './types'
+
+import { 
+  DeleteMessageType,
+  JoinRoomType, 
+  MessageType, 
+  UpdateMessageType 
+} from './types'
+
 import { createMessage, findMessages, updateMessage } from './message.service'
 
 
@@ -89,22 +96,31 @@ export async function messageListeners(app: HTTPServer) {
       }
     })
 
-    socket.on('disconnect', async () => {
-      const { decoded } = validateToken(socket)
+    socket.on('update-message', async (data: UpdateMessageType) => {
+      if (!mongoose.Types.ObjectId.isValid(data.messageId)) {
+        socket.emit('error', {
+          error:'Invalid Message Id'
+        })
+      } else {
+        const roomId = getRoomId(socket) as string
+      
+        const message = await updateMessage({ 
+          _id: data.messageId 
+        }, {
+          content: data.content
+        }, {})
 
-      if (decoded?._id) {
-        const user = await findUser({_id: String(decoded._id)})
-
-        socket.broadcast.to(getRoomId(socket) as string).emit('message', {
-          type: BOT_NAME,
-          user: BOT_NAME,
+        io.to(roomId).emit('delete-message', {
+          _id: message?._id,
+          type: USER_NAME,
+          user: {
+            _id: message?.user._id,
+            name: message?.user.name,
+          },
           date: moment().format('h:mm a'),
-          message: `${user?.name} has left the chat`
+          message: message?.content,
         })
       }
-    })
-
-    socket.on('update-message', () => {
     })
 
     socket.on('delete-message',async (data: DeleteMessageType) => {
@@ -130,6 +146,21 @@ export async function messageListeners(app: HTTPServer) {
           },
           date: moment().format('h:mm a'),
           message: message?.content,
+        })
+      }
+    })
+
+    socket.on('disconnect', async () => {
+      const { decoded } = validateToken(socket)
+
+      if (decoded?._id) {
+        const user = await findUser({_id: String(decoded._id)})
+
+        socket.broadcast.to(getRoomId(socket) as string).emit('message', {
+          type: BOT_NAME,
+          user: BOT_NAME,
+          date: moment().format('h:mm a'),
+          message: `${user?.name} has left the chat`
         })
       }
     })
