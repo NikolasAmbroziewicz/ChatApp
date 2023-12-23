@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation'
 import { useSession } from 'next-auth/react';
 
-import { Button } from '@mantine/core'
+import { Button, Loader } from '@mantine/core'
 import { AiFillEdit, AiOutlineClose } from "react-icons/ai";
 
 import { useChatContext } from '@/context/ChatContext';
@@ -13,7 +13,7 @@ import { useChatContext } from '@/context/ChatContext';
 const  SideBar = () => {
   const params = useParams()
 
-  const { allChats, deleteChat, handleEditedChat, updateChat, loading, toggleModalVisibility } = useChatContext()
+  const { allChats, deleteChat, handleEditedChat, loading, toggleModalVisibility } = useChatContext()
   const { data: session } = useSession()
 
   const activeStyles = (id: string | undefined) => {
@@ -35,7 +35,7 @@ const  SideBar = () => {
         {
           loading ? (
             <div>
-              Loading
+              <Loader color='white' size="30" />
             </div>
           ) : (
             allChats.length === 0 ? (
