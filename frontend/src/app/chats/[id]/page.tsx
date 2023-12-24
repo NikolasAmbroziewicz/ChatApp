@@ -13,6 +13,7 @@ const ChatPage = () => {
   const { data: session } = useSession()
 
   const {
+    activityUser,
     allMessages,
     isLoading,
     messageInput,
@@ -20,6 +21,7 @@ const ChatPage = () => {
     handleAddMessage,
     handleDeleteMessage,
     handleUpdateMessage,
+    handleUserTyping
   } = useMessages({
     chatContainer: chatContainer
   })
@@ -46,12 +48,16 @@ const ChatPage = () => {
                 ))
               }
             </div>
+            <span className='w-[100%] text-right pr-6 rounded text-neutral-400'>
+              {activityUser}
+            </span>
             <form onSubmit={(val) => handleAddMessage(val)} className='flex flex-col'>
               <Textarea
                 className='pb-2'
                 placeholder='Message'
                 value={messageInput}
                 onChange={(val) => setMessageInput(val.target.value)}
+                onKeyDown={() => handleUserTyping()}
               />
               <Button
                 color='cyan'

@@ -144,6 +144,21 @@ export async function deleteMessageController(
   }
 }
 
+export async function userTypingController(
+  socket: Socket,
+) {
+  const { decoded } = validateToken(socket)
+  
+  if(decoded?._id) {
+    const user = await findUser({_id: String(decoded._id)})
+
+    socket.broadcast.to(getRoomId(socket) as string).emit('user-typing', {
+      _id: user?._id,
+      name: user?.name
+    })
+  }
+}
+
 export async function disconnectController (
   socket: Socket
 ) {

@@ -6,7 +6,8 @@ import {
   deleteMessageController, 
   disconnectController, 
   joinRoomController, 
-  updateMessageController 
+  updateMessageController,
+  userTypingController
 } from './message.controller'
 
 import { validateToken } from './message.utils'
@@ -45,6 +46,10 @@ export async function messageListeners(app: HTTPServer) {
 
     socket.on('delete-message',async (data: DeleteMessageType) => {
       deleteMessageController(io, socket, data)
+    })
+
+    socket.on('user-typing', () => {
+      userTypingController(socket)
     })
 
     socket.on('disconnect', async () => {

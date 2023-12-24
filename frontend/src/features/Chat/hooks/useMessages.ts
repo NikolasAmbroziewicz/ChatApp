@@ -5,7 +5,7 @@ import { useState, useEffect, FormEvent, useRef, MutableRefObject } from "react"
 import { useParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 
-import { MessageType } from '@/features/Chat/types'
+import { MessageType, UserTyping } from '@/features/Chat/types'
 
 import { useSocket } from '@/shared/hooks/useSocket'
 
@@ -14,6 +14,7 @@ interface IUseChat {
 }
 
 export const useMessages = ({ chatContainer }: IUseChat) => {
+  const [activityUser, setActivityUser]= useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [allMessages, setAllMessages] = useState<MessageType[]>([])
   const [messageInput, setMessageInput] = useState<string>('')
@@ -27,6 +28,7 @@ export const useMessages = ({ chatContainer }: IUseChat) => {
     socket?.on('previous-messages', onPreviousMessages)
     socket?.on('delete-message', onDeleteMessage)
     socket?.on('update-message', onMessageUpdate)
+    socket?.on('user-typing', onUserTyping)
 
     // Emiters
     socket?.emit('join-room') 
@@ -36,8 +38,23 @@ export const useMessages = ({ chatContainer }: IUseChat) => {
       socket?.off('previous-messages', onPreviousMessages)
       socket?.off('delete-message', onDeleteMessage)
       socket?.off('update-message', onMessageUpdate)
+      socket?.off('user-typing', onUserTyping)
     }
   }, [socket]);
+
+  /**
+   * Listeners
+   */
+  let activityTimer: any
+  const onUserTyping = (data: UserTyping) => {
+    setActivityUser(`${data.name} is typing...`)
+
+    // Clear after 1 seconds 
+    clearTimeout(activityTimer)
+    activityTimer = setTimeout(() => {
+        setActivityUser('')
+    }, 1000)
+  }
 
   const onPreviousMessages = (allMessagesRes: MessageType[]) => {
     setAllMessages(allMessagesRes)
@@ -68,6 +85,9 @@ export const useMessages = ({ chatContainer }: IUseChat) => {
     scrollToBottom()
   }
 
+  /**
+   * Handlers Function
+   */
   const handleAddMessage = async(event: FormEvent) => {
     event.preventDefault()
 
@@ -96,14 +116,22 @@ export const useMessages = ({ chatContainer }: IUseChat) => {
     })
   }
 
+  const handleUserTyping = async () => {
+    socket?.emit('user-typing')
+  }
+
+  /**
+   * Helpers Function
+   */
+
   const scrollToBottom = () => {
     if(chatContainer?.current) {
       chatContainer.current.scrollTop = chatContainer.current.scrollHeight + 10000;
     }
   }
   
-
   return {
+    activityUser,
     allMessages,
     isLoading,
     messageInput,
@@ -111,5 +139,6 @@ export const useMessages = ({ chatContainer }: IUseChat) => {
     handleAddMessage,
     handleDeleteMessage,
     handleUpdateMessage,
+    handleUserTyping
   }
 }

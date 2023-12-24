@@ -13,3 +13,8 @@ export type JoinRoomType = {
   room: string,
   user: string
 }
+
+export type UserTyping = {
+  _id: string,
+  name: string
+}
